@@ -109,6 +109,24 @@
   notify:
     - Restart haproxy container
 
+- name: Copying over keystone.pem
+  vars:
+    service: "{{ loadbalancer_services['haproxy'] }}"
+  copy:
+    src: "{{ kolla_keystone_fqdn_cert }}"
+    dest: "{{ node_config_directory }}/haproxy/{{ item }}"
+    mode: "0660"
+  become: true
+  when:
+    - kolla_enable_tls_external | bool
+    - not kolla_externally_managed_cert | bool
+    - inventory_hostname in groups[service.group]
+    - service.enabled | bool
+  with_items:
+    - "keystone.pem"
+  notify:
+    - Restart haproxy container
+
 - name: Copying over haproxy-internal.pem
   vars:
     service: "{{ loadbalancer_services['haproxy'] }}"
