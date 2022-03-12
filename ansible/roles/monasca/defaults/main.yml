@@ -60,7 +60,7 @@ monasca_services:
     container_name: monasca_agent_collector
     group: monasca-agent-collector
     enabled: true
-    image: "{{ monasca_agent_image_full }}"
+    image: "{{ monasca_agent_collector_image_full }}"
     pid_mode: "host"
     volumes: "{{ monasca_agent_collector_default_volumes + monasca_agent_collector_extra_volumes }}"
     dimensions: "{{ monasca_agent_dimensions }}"
