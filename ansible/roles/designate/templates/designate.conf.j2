@@ -70,9 +70,6 @@ notification_topics = {{ designate_notifications_topic_name }}
 control_exchange = nova
 formatv4 = '%(octet0)s-%(octet1)s-%(octet2)s-%(octet3)s.%(zone)s'
 formatv4 = '%(hostname)s.%(project)s.%(zone)s'
-formatv4 = '%(hostname)s.%(zone)s'
-formatv6 = '%(hostname)s.%(zone)s'
-formatv6 = '%(hostname)s.%(project)s.%(zone)s'
 
 [handler:neutron_floatingip]
 #NOTE: zone_id must be manually filled an ID from openstack zone list
