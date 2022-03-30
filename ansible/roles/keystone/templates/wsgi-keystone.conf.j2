@@ -68,6 +68,11 @@ LogLevel info
     OIDCCacheType memcache
     OIDCMemCacheServers "{% for host in groups['memcached'] %}{{ 'api' | kolla_address(host) | put_address_in_context('memcache') }}:{{ memcached_port }}{% if not loop.last %},{% endif %}{% endfor %}"
 {% endif %}
+{% for idp in keystone_identity_providers %}
+{% if idp.authorized_domain %}
+    OIDCAuthRequestParams hd={{ idp.authorized_domain }}
+{% endif %}
+{% endfor %}
 
     <Location ~ "/redirect_uri">
       Require valid-user
@@ -86,6 +91,17 @@ LogLevel info
       OIDCDiscoverURL {{ keystone_public_url }}/redirect_uri?iss={{ idp.identifier | urlencode }}
       Require valid-user
       AuthType openid-connect
+
+{% if idp.is_default %}
+      {# Skip IDC Discovery page and redirect to the default provider #} 
+      OIDCDiscoverURL {{ keystone_public_url }}/redirect_uri?iss={{ idp.identifier | urlencode | replace("/", "%2F") }}
+      Require claim iss:{{ idp.identifier }}
+{% endif %}
+
+{% if idp.authorized_domain %}
+      {# Restrict allowed users to specified domain.  #}
+      Require claim hd:{{ idp.authorized_domain }}
+{% endif %}
     </LocationMatch>
 {% endif %}
 {% endfor %}
