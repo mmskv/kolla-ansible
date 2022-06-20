@@ -6,7 +6,10 @@ ansible_python_interpreter: /usr/bin/python3
 {% endif %}
 
 kolla_base_distro: "{{ base_distro }}"
+# Zed dropped install_type so we have it only on upgrades
+{% if is_upgrade %}
 kolla_install_type: "{{ install_type }}"
+{% endif %}
 network_interface: "{{ api_interface_name }}"
 network_address_family: "{{ address_family }}"
 docker_restart_policy: "no"
@@ -96,12 +99,12 @@ enable_aodh: "yes"
 
 {% if scenario == "ironic" %}
 enable_ironic: "yes"
-ironic_dnsmasq_dhcp_range: "10.42.0.2,10.42.0.254,255.255.255.0"
+ironic_dnsmasq_dhcp_ranges:
+  - range: "10.42.0.2,10.42.0.254,255.255.255.0"
 {% endif %}
 
 {% if scenario == "masakari" %}
 enable_masakari: "yes"
-enable_hacluster: "yes"
 {% endif %}
 
 {% if scenario == "cells" %}
@@ -145,8 +148,7 @@ openstack_cacert: "/etc/pki/tls/certs/ca-bundle.crt"
 {% endif %}
 kolla_admin_openrc_cacert: "{% raw %}{{ kolla_certificates_dir }}{% endraw %}/ca/root.crt"
 rabbitmq_enable_tls: "yes"
-# TODO(mgoddard): Set this to "yes" when previous release is Yoga.
-libvirt_tls: "{{ not is_upgrade or previous_release != 'xena' }}"
+libvirt_tls: "yes"
 {% endif %}
 
 {% if scenario == 'linuxbridge' %}

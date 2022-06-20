@@ -4,7 +4,6 @@
     pre-run: tests/pre.yml
     run: tests/run.yml
     post-run: tests/post.yml
-    attempts: 5
     timeout: 7200
     post-timeout: 1800
     required-projects:
@@ -27,7 +26,7 @@
       - ^kolla_ansible/tests/
       - ^zuul\.d/
     vars:
-      previous_release: xena
+      previous_release: yoga
       scenario: core
       virt_type: qemu
       is_upgrade: no
@@ -75,7 +74,6 @@
       - ^tests/test-bifrost.sh
     vars:
       scenario: bifrost
-      install_type: source
 
 - job:
     name: kolla-ansible-ironic-base

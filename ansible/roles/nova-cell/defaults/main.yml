@@ -197,39 +197,38 @@ nova_cell_notify_rabbitmq_users:
 ####################
 # Docker
 ####################
-nova_install_type: "{{ kolla_install_type }}"
 nova_tag: "{{ openstack_tag }}"
 
-nova_libvirt_image: "{{ docker_registry ~ '/' if docker_registry else '' }}{{ docker_namespace }}/{{ kolla_base_distro }}-{{ nova_install_type }}-nova-libvirt"
+nova_libvirt_image: "{{ docker_registry ~ '/' if docker_registry else '' }}{{ docker_namespace }}/nova-libvirt"
 nova_libvirt_tag: "{{ nova_tag }}"
 nova_libvirt_image_full: "{{ nova_libvirt_image }}:{{ nova_libvirt_tag }}"
 nova_libvirt_cpu_mode: "{{ 'host-passthrough' if ansible_facts.architecture == 'aarch64' else '' }}"
 
-nova_ssh_image: "{{ docker_registry ~ '/' if docker_registry else '' }}{{ docker_namespace }}/{{ kolla_base_distro }}-{{ nova_install_type }}-nova-ssh"
+nova_ssh_image: "{{ docker_registry ~ '/' if docker_registry else '' }}{{ docker_namespace }}/nova-ssh"
 nova_ssh_tag: "{{ nova_tag }}"
 nova_ssh_image_full: "{{ nova_ssh_image }}:{{ nova_ssh_tag }}"
 
-nova_novncproxy_image: "{{ docker_registry ~ '/' if docker_registry else '' }}{{ docker_namespace }}/{{ kolla_base_distro }}-{{ nova_install_type }}-nova-novncproxy"
+nova_novncproxy_image: "{{ docker_registry ~ '/' if docker_registry else '' }}{{ docker_namespace }}/nova-novncproxy"
 nova_novncproxy_tag: "{{ nova_tag }}"
 nova_novncproxy_image_full: "{{ nova_novncproxy_image }}:{{ nova_novncproxy_tag }}"
 
-nova_spicehtml5proxy_image: "{{ docker_registry ~ '/' if docker_registry else '' }}{{ docker_namespace }}/{{ kolla_base_distro }}-{{ nova_install_type }}-nova-spicehtml5proxy"
+nova_spicehtml5proxy_image: "{{ docker_registry ~ '/' if docker_registry else '' }}{{ docker_namespace }}/nova-spicehtml5proxy"
 nova_spicehtml5proxy_tag: "{{ nova_tag }}"
 nova_spicehtml5proxy_image_full: "{{ nova_spicehtml5proxy_image }}:{{ nova_spicehtml5proxy_tag }}"
 
-nova_serialproxy_image: "{{ docker_registry ~ '/' if docker_registry else '' }}{{ docker_namespace }}/{{ kolla_base_distro }}-{{ nova_install_type }}-nova-serialproxy"
+nova_serialproxy_image: "{{ docker_registry ~ '/' if docker_registry else '' }}{{ docker_namespace }}/nova-serialproxy"
 nova_serialproxy_tag: "{{ nova_tag }}"
 nova_serialproxy_image_full: "{{ nova_serialproxy_image }}:{{ nova_serialproxy_tag }}"
 
-nova_conductor_image: "{{ docker_registry ~ '/' if docker_registry else '' }}{{ docker_namespace }}/{{ kolla_base_distro }}-{{ nova_install_type }}-nova-conductor"
+nova_conductor_image: "{{ docker_registry ~ '/' if docker_registry else '' }}{{ docker_namespace }}/nova-conductor"
 nova_conductor_tag: "{{ nova_tag }}"
 nova_conductor_image_full: "{{ nova_conductor_image }}:{{ nova_conductor_tag }}"
 
-nova_compute_image: "{{ docker_registry ~ '/' if docker_registry else '' }}{{ docker_namespace }}/{{ kolla_base_distro }}-{{ nova_install_type }}-nova-compute"
+nova_compute_image: "{{ docker_registry ~ '/' if docker_registry else '' }}{{ docker_namespace }}/nova-compute"
 nova_compute_tag: "{{ nova_tag }}"
 nova_compute_image_full: "{{ nova_compute_image }}:{{ nova_compute_tag }}"
 
-nova_compute_ironic_image: "{{ docker_registry ~ '/' if docker_registry else '' }}{{ docker_namespace }}/{{ kolla_base_distro }}-{{ nova_install_type }}-nova-compute-ironic"
+nova_compute_ironic_image: "{{ docker_registry ~ '/' if docker_registry else '' }}{{ docker_namespace }}/nova-compute-ironic"
 nova_compute_ironic_tag: "{{ nova_tag }}"
 nova_compute_ironic_image_full: "{{ nova_compute_ironic_image }}:{{ nova_compute_ironic_tag }}"
 
@@ -487,6 +486,12 @@ nova_compute_startup_delay: 30
 # To disable access to the API database from cell conductors, set
 # nova_cell_conductor_has_api_database to no.
 nova_cell_conductor_has_api_database: "yes"
+
+# Whether the failure of a nova-compute service to register itself is fatal to
+# the Kolla Ansible run.  This is evaluated on a per-cell basis. Default
+# behaviour is to only fail the host on which the compute service failed to
+# register itself.
+nova_compute_registration_fatal: false
 
 ####################
 # Notification

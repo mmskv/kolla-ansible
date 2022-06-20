@@ -21,6 +21,9 @@
 # By default, we do not provide a gather subset.
 #kolla_ansible_setup_gather_subset: "{{ omit }}"
 
+# Dummy variable to allow Ansible to accept this file.
+workaround_ansible_issue_8743: yes
+
 ###############
 # Kolla options
 ###############
@@ -29,9 +32,6 @@
 
 # Valid options are ['centos', 'debian', 'rhel', 'ubuntu']
 #kolla_base_distro: "centos"
-
-# Valid options are [ binary, source ]
-#kolla_install_type: "source"
 
 # Do not override this unless you know what you are doing.
 #openstack_release: "master"
@@ -95,15 +95,6 @@
 ###################
 # Messaging options
 ###################
-# Below is an example of an separate backend that provides brokerless
-# messaging for oslo.messaging RPC communications
-
-#om_rpc_transport: "amqp"
-#om_rpc_user: "{{ qdrouterd_user }}"
-#om_rpc_password: "{{ qdrouterd_password }}"
-#om_rpc_port: "{{ qdrouterd_port }}"
-#om_rpc_group: "qdrouterd"
-
 # Whether to enable TLS for oslo.messaging communication with RabbitMQ.
 #om_enable_rabbitmq_tls: "{{ rabbitmq_enable_tls | bool }}"
 # CA certificate bundle in containers using oslo.messaging with RabbitMQ TLS.
@@ -306,6 +297,8 @@
 #enable_cinder_backend_lvm: "no"
 #enable_cinder_backend_nfs: "no"
 #enable_cinder_backend_quobyte: "no"
+#enable_cinder_backend_pure_iscsi: "no"
+#enable_cinder_backend_pure_fc: "no"
 #enable_cloudkitty: "no"
 #enable_collectd: "no"
 #enable_cyborg: "no"
@@ -345,9 +338,7 @@
 #enable_horizon_zun: "{{ enable_zun | bool }}"
 #enable_influxdb: "{{ enable_monasca | bool or (enable_cloudkitty | bool and cloudkitty_storage_backend == 'influxdb') }}"
 #enable_ironic: "no"
-#enable_ironic_ipxe: "yes"
 #enable_ironic_neutron_agent: "{{ enable_neutron | bool and enable_ironic | bool }}"
-#enable_ironic_pxe_uefi: "no"
 #enable_iscsid: "{{ enable_cinder | bool and enable_cinder_backend_iscsi | bool }}"
 #enable_kafka: "{{ enable_monasca | bool }}"
 #enable_kibana: "{{ 'yes' if enable_central_logging | bool or enable_monasca | bool else 'no' }}"
@@ -388,7 +379,6 @@
 #enable_osprofiler: "no"
 #enable_placement: "{{ enable_nova | bool or enable_zun | bool }}"
 #enable_prometheus: "no"
-#enable_qdrouterd: "{{ 'yes' if om_rpc_transport == 'amqp' else 'no' }}"
 #enable_redis: "no"
 #enable_sahara: "no"
 #enable_senlin: "no"
@@ -464,9 +454,6 @@
 #############################
 # Keystone - Identity Options
 #############################
-
-# Valid options are [ fernet ]
-#keystone_token_provider: 'fernet'
 
 #keystone_admin_user: "admin"
 
@@ -598,10 +585,12 @@
 #############################
 # dnsmasq bind interface for Ironic Inspector, by default is network_interface
 #ironic_dnsmasq_interface: "{{ network_interface }}"
-# The following value must be set when enabling ironic, the value format is
-# "192.168.0.10,192.168.0.100,255.255.255.0" the last being an optional netmask.
-#ironic_dnsmasq_dhcp_range:
-# PXE bootloader file for Ironic Inspector, relative to /tftpboot.
+# The following value must be set when enabling ironic, the value format is a
+# list of ranges - at least one must be configured, for example:
+# - range: 192.168.0.10,192.168.0.100
+# See Kolla Ansible docs on Ironic for details.
+#ironic_dnsmasq_dhcp_ranges:
+# PXE bootloader file for Ironic Inspector, relative to /var/lib/ironic/tftpboot.
 #ironic_dnsmasq_boot_file: "pxelinux.0"
 
 # Configure ironic upgrade option, due to currently kolla support
@@ -613,6 +602,9 @@
 
 # List of extra kernel parameters passed to the kernel used during inspection
 #ironic_inspector_kernel_cmdline_extras: []
+
+# Valid options are [ '', redis, etcd ]
+#ironic_coordination_backend: "{{ 'redis' if enable_redis|bool else 'etcd' if enable_etcd|bool else '' }}"
 
 ######################################
 # Manila - Shared File Systems Options

@@ -1,5 +1,5 @@
 {% set keystone_log_dir = '/var/log/kolla/keystone' %}
-{% set binary_path = '/usr/bin' if keystone_install_type == 'binary' else '/var/lib/kolla/venv/bin' %}
+{% set binary_path = '/var/lib/kolla/venv/bin' %}
 {% if keystone_enable_tls_backend | bool %}
 {% if kolla_base_distro in ['centos']  %}
 LoadModule ssl_module /usr/lib64/httpd/modules/mod_ssl.so
@@ -8,7 +8,11 @@ LoadModule ssl_module /usr/lib/apache2/modules/mod_ssl.so
 {% endif %}
 {% endif %}
 Listen {{ api_interface_address | put_address_in_context('url') }}:{{ keystone_public_listen_port }}
+{% if kolla_action == 'upgrade' %}
+# NOTE(yoctozepto): Admin port settings are kept only for upgrade compatibility.
+# TODO(yoctozepto): Remove after Zed.
 Listen {{ api_interface_address | put_address_in_context('url') }}:{{ keystone_admin_listen_port }}
+{% endif %}
 
 ServerSignature Off
 ServerTokens Prod
@@ -66,7 +70,7 @@ LogLevel info
     OIDCRedirectURI {{ keystone_public_url }}/redirect_uri
 {% if enable_memcached | bool and keystone_oidc_enable_memcached | bool %}
     OIDCCacheType memcache
-    OIDCMemCacheServers "{% for host in groups['memcached'] %}{{ 'api' | kolla_address(host) | put_address_in_context('memcache') }}:{{ memcached_port }}{% if not loop.last %},{% endif %}{% endfor %}"
+    OIDCMemCacheServers "{% for host in groups['memcached'] %}{{ 'api' | kolla_address(host) | put_address_in_context('memcache') }}:{{ memcached_port }}{% if not loop.last %} {% endif %}{% endfor %}"
 {% endif %}
 {% for idp in keystone_identity_providers %}
 {% if idp.authorized_domain %}
@@ -120,6 +124,9 @@ LogLevel info
 {% endif %}
 </VirtualHost>
 
+{% if kolla_action == 'upgrade' %}
+# NOTE(yoctozepto): Admin port settings are kept only for upgrade compatibility.
+# TODO(yoctozepto): Remove after Zed.
 <VirtualHost *:{{ keystone_admin_listen_port }}>
     WSGIDaemonProcess keystone-admin processes={{ openstack_service_workers }} threads=1 user=keystone group=keystone display-name=keystone-admin
     WSGIProcessGroup keystone-admin
@@ -139,3 +146,4 @@ LogLevel info
     SSLCertificateKeyFile /etc/keystone/certs/keystone-key.pem
 {% endif %}
 </VirtualHost>
+{% endif %}

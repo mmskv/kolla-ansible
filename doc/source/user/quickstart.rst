@@ -96,7 +96,7 @@ If not installing Kolla Ansible in a virtual environment, skip this section.
 
    .. code-block:: console
 
-      pip install 'ansible==5.*'
+      pip install 'ansible>=4,<6'
 
 Install dependencies not using a virtual environment
 ----------------------------------------------------
@@ -147,7 +147,7 @@ If installing Kolla Ansible in a virtual environment, skip this section.
    .. note::
 
       If the installed Ansible version does not meet the requirements, one can
-      use pip: ``sudo pip install -U 'ansible==5.*'``.
+      use pip: ``sudo pip install -U 'ansible>=4,<6'``.
       Beware system package upgrades might interfere with that so it
       is recommended to uninstall the system package first. One might be better
       off with the virtual environment method to avoid this pitfall.
@@ -201,6 +201,13 @@ Install Kolla-ansible for deployment or evaluation
    .. code-block:: console
 
       cp /path/to/venv/share/kolla-ansible/ansible/inventory/* .
+
+   For ``all-in-one`` scenario in virtual environment add the following
+   to the very beginning of the inventory:
+
+   .. code-block:: console
+
+      localhost ansible_python_interpreter=python
 
    If not using a virtual environment, run:
 
@@ -390,28 +397,6 @@ There are a few options that are required to deploy Kolla Ansible:
   .. code-block:: console
 
      kolla_base_distro: "centos"
-
-  Next "type" of installation needs to be configured.
-  Choices are:
-
-  binary
-   using repositories like apt or dnf
-
-  source (default)
-   using raw source archives, git repositories or local source directory
-
-  .. note::
-
-     This only affects OpenStack services. Infrastructure services are
-     always "binary".
-
-  .. note::
-
-     Source builds are proven to be slightly more reliable than binary.
-
-  .. code-block:: console
-
-     kolla_install_type: "source"
 
 * Networking
 

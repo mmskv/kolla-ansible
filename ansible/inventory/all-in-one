@@ -77,9 +77,6 @@ control
 [outward-rabbitmq:children]
 control
 
-[qdrouterd:children]
-control
-
 [monasca-agent:children]
 compute
 control
@@ -216,6 +213,9 @@ control
 [blazar:children]
 control
 
+[venus:children]
+monitoring
+
 # Additional control implemented here. These groups allow you to control which
 # services run on which hosts at a per-service level.
 #
@@ -284,6 +284,7 @@ neutron
 
 [neutron-ovn-metadata-agent:children]
 compute
+network
 
 [neutron-bgp-dragent:children]
 neutron
@@ -441,10 +442,10 @@ ironic
 [ironic-inspector:children]
 ironic
 
-[ironic-pxe:children]
+[ironic-tftp:children]
 ironic
 
-[ironic-ipxe:children]
+[ironic-http:children]
 ironic
 
 # Magnum
@@ -732,9 +733,6 @@ ovn-database
 
 [ovn-sb-db:children]
 ovn-database
-
-[venus:children]
-monitoring
 
 [venus-api:children]
 venus
