@@ -79,6 +79,9 @@ LogLevel info
 {% endfor %}
 
     <Location ~ "/redirect_uri">
+      {% if keystone_overwrite_port is defined and keystone_overwrite_port %}
+      Header edit Location {{ keystone_public_url }}:{{ keystone_public_list_port }} {{ keystone_public_url }}
+      {%endif%}
       Require valid-user
       AuthType openid-connect
     </Location>
